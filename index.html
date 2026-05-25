@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2D Guitar Fretboard Practice Tool</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+  <h1>Interactive Guitar Fretboard</h1>
+
+  <div class="container">
+    <div class="controls-grid">
+      <div class="control-group">
+        <label for="key-select">Key</label>
+        <select id="key-select"></select>
+      </div>
+
+      <div class="control-group">
+        <label for="mode-select">Mode Type</label>
+        <select id="mode-select">
+          <option value="scales">Scales</option>
+          <option value="chords">Chords</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="type-select">Collection</label>
+        <select id="type-select"></select>
+      </div>
+
+      <div class="control-group">
+        <label for="pattern-select">CAGED Pattern Shape</label>
+        <select id="pattern-select">
+          <option value="all">Full Fretboard View</option>
+          <option value="caged_1">Pattern 1 (G / Em Shape)</option>
+          <option value="caged_2">Pattern 2 (E / Dm Shape)</option>
+          <option value="caged_3">Pattern 3 (D / Cm Shape)</option>
+          <option value="caged_4">Pattern 4 (C / Am Shape)</option>
+          <option value="caged_5">Pattern 5 (A / Gm Shape)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="display-mode">Note Label Display</label>
+        <select id="display-mode">
+          <option value="names">Note Names (C, D, E)</option>
+          <option value="intervals">Interval Numbers (1, 2, 3)</option>
+          <option value="combined">Combined (C (1))</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="shape-select">Marker Style Shape</label>
+        <select id="shape-select">
+          <option value="shape-circle">Circle / Round</option>
+          <option value="shape-square">Square</option>
+          <option value="shape-rounded">Rounded Square</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="font-color-picker">Marker Font Color</label>
+        <input type="color" id="font-color-picker" value="#ffffff">
+      </div>
+
+      <div class="control-group">
+        <label for="theme-select">Visual Palette Theme</label>
+        <select id="theme-select">
+          <option value="dark">Dark Theme</option>
+          <option value="light">Light Theme</option>
+        </select>
+      </div>
+
+      <div class="control-group toggle-container">
+        <label for="visibility-toggle">Display Background Notes</label>
+        <input type="checkbox" id="visibility-toggle" checked style="width: 20px; height: 20px; cursor:pointer;">
+      </div>
+    </div>
+
+    <div class="color-mapper">
+      <label>Interval Degree Color Assignments</label>
+      <div class="color-pickers">
+        <div class="picker-item"><span>1 (Root)</span><input type="color" id="col-1" value="#ef4444"></div>
+        <div class="picker-item"><span>2nd</span><input type="color" id="col-2" value="#f97316"></div>
+        <div class="picker-item"><span>3rd</span><input type="color" id="col-3" value="#eab308"></div>
+        <div class="picker-item"><span>4th</span><input type="color" id="col-4" value="#06b6d4"></div>
+        <div class="picker-item"><span>5th</span><input type="color" id="col-5" value="#3b82f6"></div>
+        <div class="picker-item"><span>6th</span><input type="color" id="col-6" value="#a855f7"></div>
+        <div class="picker-item"><span>7th</span><input type="color" id="col-7" value="#ec4899"></div>
+      </div>
+      <button class="action-btn" id="save-settings-btn">Save Settings & Colors</button>
+    </div>
+
+    <div class="fretboard-wrapper">
+      <div class="fretboard-grid" id="fretboard-canvas"></div>
+      <div class="numbers-row" id="fret-numbers-line"></div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

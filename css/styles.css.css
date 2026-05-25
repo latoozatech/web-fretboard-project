@@ -1,0 +1,270 @@
+:root, [data-theme="dark"] {
+  --bg-color: #1a1a24;
+  --panel-bg: #242432;
+  --fretboard-bg: #2e2e3e;
+  --fret-color: #8c8c9e;
+  --nut-color: #d1d1e0;
+  --marker-dot: #4a4a5a;
+  --text-color: #f8fafc;
+  --muted-text: #94a3b8;
+  --accent-color: #4f46e5;
+  --input-bg: #2d2d3d;
+  --input-border: #475569;
+  --label-width: 60px;
+  --fret-width: 55px;
+  --passive-note-bg: rgba(241, 245, 249, 0.12);
+  --passive-note-text: rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --panel-bg: #ffffff;
+  --fretboard-bg: #e2e8f0;
+  --fret-color: #cbd5e1;
+  --nut-color: #475569;
+  --marker-dot: #94a3b8;
+  --text-color: #0f172a;
+  --muted-text: #64748b;
+  --accent-color: #3b82f6;
+  --input-bg: #f8fafc;
+  --input-border: #cbd5e1;
+  --passive-note-bg: rgba(15, 23, 42, 0.08);
+  --passive-note-text: rgba(15, 23, 42, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.container {
+  width: 100%;
+  max-width: 1450px;
+  background-color: var(--panel-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: background-color 0.2s;
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+  background: rgba(0,0,0,0.05);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+label {
+  font-size: 0.85rem;
+  color: var(--muted-text);
+  font-weight: 500;
+}
+
+select, input[type="color"] {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#key-select {
+  max-width: 90px;
+}
+
+.toggle-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-top: 20px;
+}
+
+.color-mapper {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--input-border);
+}
+
+.color-pickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--input-bg);
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.picker-item input[type="color"] {
+  padding: 0;
+  height: 25px;
+  border: none;
+  border-radius: 4px;
+}
+
+.action-btn {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+.fretboard-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  padding: 20px 0;
+  margin-top: 10px;
+}
+
+.fretboard-grid {
+  display: grid;
+  grid-template-columns: var(--label-width) repeat(24, var(--fret-width));
+  background-color: var(--fretboard-bg);
+  width: max-content;
+  border-radius: 4px;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.string-label {
+  grid-column: 1;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  background-color: var(--panel-bg);
+  height: 40px;
+  border-right: 4px solid var(--nut-color);
+  transition: border-color 0.2s;
+}
+
+.fret-cell {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-right: 2px solid var(--fret-color);
+  transition: border-color 0.2s;
+}
+
+.fret-cell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--wire-thickness, 2px);
+  background-color: var(--fret-color);
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fret-cell .dot-marker {
+  position: absolute;
+  left: 50%;
+  background-color: var(--marker-dot);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  z-index: 1;
+  pointer-events: none;
+  transition: background-color 0.2s;
+}
+
+.fret-cell .dot-marker.single { top: 50%; }
+.fret-cell .dot-marker.double-top { top: 25%; }
+.fret-cell .dot-marker.double-bot { top: 75%; }
+
+.note-marker {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  z-index: 3;
+  background-color: var(--passive-note-bg);
+  color: var(--passive-note-text);
+}
+
+.fretboard-grid.hide-all-notes .note-marker:not(.active) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.note-marker.shape-circle { border-radius: 50%; }
+.note-marker.shape-square { border-radius: 0%; }
+.note-marker.shape-rounded { border-radius: 6px; }
+
+.note-marker:not(.active) {
+  border-radius: 50%;
+}
+
+.numbers-row {
+  display: grid;
+  grid-template-columns: var(--label-width) repeat(24, var(--fret-width));
+  margin-top: 12px;
+  width: max-content;
+  border-top: 1px solid var(--input-border);
+  padding-top: 6px;
+}
+
+.num-label {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted-text);
+}
