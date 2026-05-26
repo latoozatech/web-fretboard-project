@@ -24,7 +24,6 @@ const DICTIONARY = {
     'Dominant 7': { intervals: "0,4,7,10".split(",").map(Number), degrees: {0:1, 4:3, 7:5, 10:7}, type: 'major' }
   }
 };
-
 // Elements
 const keySelect = document.getElementById('key-select');
 const modeSelect = document.getElementById('mode-select');
@@ -33,7 +32,7 @@ const patternSelect = document.getElementById('pattern-select');
 const displayMode = document.getElementById('display-mode');
 const shapeSelect = document.getElementById('shape-select');
 const fontColorPicker = document.getElementById('font-color-picker');
-const themeSelect = document.getElementById('theme-select');
+const boardColorPicker = document.getElementById('board-color-picker');
 const visibilityToggle = document.getElementById('visibility-toggle');
 const fretboardCanvas = document.getElementById('fretboard-canvas');
 const fretNumbersLine = document.getElementById('fret-numbers-line');
@@ -60,21 +59,20 @@ function populateStructures() {
 function buildFretboardStructure() {
   fretboardCanvas.innerHTML = '';
   const targetDots = "3,5,7,9,15,17,19,21".split(",").map(Number);
-
+  
   STRINGS_TUNING.forEach((rootIdx, stringIdx) => {
     const label = document.createElement('div');
     label.className = 'string-label';
     label.innerText = STRING_LABELS[stringIdx];
     fretboardCanvas.appendChild(label);
-
+    
     for (let f = 1; f <= TOTAL_FRETS; f++) {
       const cell = document.createElement('div');
       cell.className = 'fret-cell';
       cell.setAttribute('data-fret', f);
-
       const gauge = 1 + (stringIdx * 0.4);
       cell.style.setProperty('--wire-thickness', `${gauge}px`);
-
+      
       if (stringIdx === 2 || stringIdx === 3) {
         if (targetDots.includes(f)) {
           const dot = document.createElement('div');
@@ -82,7 +80,6 @@ function buildFretboardStructure() {
           cell.appendChild(dot);
         }
       }
-
       if (f === 12 || f === 24) {
         if (stringIdx === 1) {
           const dotTop = document.createElement('div');
@@ -95,9 +92,8 @@ function buildFretboardStructure() {
           cell.appendChild(dotBot);
         }
       }
-
+      
       const noteValue = (rootIdx + f) % 12;
-
       const marker = document.createElement('div');
       marker.className = 'note-marker';
       marker.setAttribute('data-string', stringIdx);
@@ -107,17 +103,15 @@ function buildFretboardStructure() {
         e.stopPropagation();
         handleManualClick(stringIdx, f);
       });
-
       cell.appendChild(marker);
       fretboardCanvas.appendChild(cell);
     }
   });
-
+  
   fretNumbersLine.innerHTML = '';
   const blankCorner = document.createElement('div');
   blankCorner.className = 'num-label';
   fretNumbersLine.appendChild(blankCorner);
-
   for (let f = 1; f <= TOTAL_FRETS; f++) {
     const num = document.createElement('div');
     num.className = 'num-label';
@@ -125,17 +119,14 @@ function buildFretboardStructure() {
     fretNumbersLine.appendChild(num);
   }
 }
-
 // Pattern boundary logic
 function checkPatternBoundary(fret, pattern, key, quality) {
   if (pattern === 'all') return true;
-
   let lowestEStringRootFret = (key - 4 + 12) % 12;
   if (lowestEStringRootFret === 0) lowestEStringRootFret = 12;
-
   const patternIndex = parseInt(pattern.replace('caged_', ''));
-
   let relativeOffset = 0;
+  
   if (quality === 'major') {
     const majorOffsets = { 1: -3, 2: 0, 3: 2, 4: 5, 5: 7 };
     relativeOffset = majorOffsets[patternIndex];
@@ -143,19 +134,16 @@ function checkPatternBoundary(fret, pattern, key, quality) {
     const minorOffsets = { 1: 0, 2: 2, 3: 5, 4: 7, 5: 10 };
     relativeOffset = minorOffsets[patternIndex];
   }
-
+  
   let startFret = ((lowestEStringRootFret + relativeOffset) );
   let endFret = startFret + 3;
-
+  
   if (startFret < 1) { startFret += 12; endFret += 12; }
   if (startFret > 12) { startFret -= 12; endFret -= 12; }
-
   const inRange = (x, a, b) => x >= a && x <= b;
-
   const match1 = inRange(fret, startFret, endFret);
   const match2 = inRange(fret, startFret + 12, endFret + 12);
   const match3 = inRange(fret, startFret - 12, endFret - 12);
-
   return match1 || match2 || match3;
 }
 
@@ -166,52 +154,68 @@ function handleManualClick(string, fret) {
   updateFretboardEngine();
 }
 
+// Helper: Aggregates selected dropdown option values
+function getSelectedPatterns() {
+  const selected = [];
+  for (let i = 0; i < patternSelect.options.length; i++) {
+    if (patternSelect.options[i].selected) {
+      selected.push(patternSelect.options[i].value);
+    }
+  }
+  return selected;
+}
+
 // Main rendering/update
 function updateFretboardEngine() {
   const currentRoot = parseInt(keySelect.value);
   const category = modeSelect.value;
   const selectionName = typeSelect.value;
-  const currentPattern = patternSelect.value;
   const labelMode = displayMode.value;
   const currentShape = shapeSelect.value;
   const fontColor = fontColorPicker.value;
-
+  
   if (!selectionName) return;
-
   const Formula = DICTIONARY[category][selectionName];
   const qualityType = Formula.type;
-
+  
   if (visibilityToggle.checked) {
     fretboardCanvas.classList.remove('hide-all-notes');
   } else {
     fretboardCanvas.classList.add('hide-all-notes');
   }
-
+  
+  const activePatterns = getSelectedPatterns();
   const markers = fretboardCanvas.querySelectorAll('.note-marker');
-
+  
   markers.forEach(marker => {
     const string = parseInt(marker.getAttribute('data-string'));
     const fret = parseInt(marker.getAttribute('data-fret'));
     const noteVal = parseInt(marker.getAttribute('data-note'));
-
     const structuralInterval = (noteVal - currentRoot + 12) % 12;
-
-    let isActiveTarget =
-      Formula.intervals.includes(structuralInterval) &&
-      checkPatternBoundary(fret, currentPattern, currentRoot, qualityType);
-
+    
+    let isInPatternBoundary = false;
+    if (activePatterns.includes('all') || activePatterns.length === 0) {
+      isInPatternBoundary = true;
+    } else {
+      isInPatternBoundary = activePatterns.some(pat => 
+        checkPatternBoundary(fret, pat, currentRoot, qualityType)
+      );
+    }
+    
+    let isActiveTarget = Formula.intervals.includes(structuralInterval) && isInPatternBoundary;
+    
     const overrideKey = `${string}-${fret}`;
     if (manualOverrides[overrideKey]) {
       isActiveTarget = !isActiveTarget;
     }
-
-    marker.className = 'note-marker'; // reset
+    
+    marker.className = 'note-marker'; 
     marker.style.backgroundColor = '';
     marker.style.color = fontColor;
-
+    
     const degreeNum = Formula.degrees[structuralInterval] || '';
     const noteNameText = NOTE_NAMES[noteVal];
-
+    
     if (labelMode === 'names') {
       marker.innerText = noteNameText;
     } else if (labelMode === 'intervals') {
@@ -219,7 +223,7 @@ function updateFretboardEngine() {
     } else {
       marker.innerText = degreeNum ? `${noteNameText}(${degreeNum})` : noteNameText;
     }
-
+    
     if (isActiveTarget) {
       marker.classList.add('active', currentShape);
       if (degreeNum) {
@@ -230,19 +234,13 @@ function updateFretboardEngine() {
     }
   });
 }
-
-// Theme switch
-function changeThemeEngine() {
-  document.documentElement.setAttribute('data-theme', themeSelect.value);
-}
-
 // Save/load settings
 function saveToLocalStorage() {
   const config = {
     shape: shapeSelect.value,
     fontColor: fontColorPicker.value,
+    boardColor: boardColorPicker.value,
     visibility: visibilityToggle.checked,
-    theme: themeSelect.value,
     colors: {}
   };
   for (let i = 1; i <= 7; i++) {
@@ -259,9 +257,13 @@ function loadFromLocalStorage() {
     const config = JSON.parse(stored);
     shapeSelect.value = config.shape || 'shape-circle';
     fontColorPicker.value = config.fontColor || '#ffffff';
-    themeSelect.value = config.theme || 'dark';
+    
+    if (config.boardColor) {
+      boardColorPicker.value = config.boardColor;
+      document.documentElement.style.setProperty('--fretboard-bg', config.boardColor);
+    }
+    
     if (config.visibility !== undefined) visibilityToggle.checked = config.visibility;
-
     if (config.colors) {
       for (let i = 1; i <= 7; i++) {
         if (config.colors[i]) {
@@ -269,7 +271,6 @@ function loadFromLocalStorage() {
         }
       }
     }
-    changeThemeEngine();
   } catch (e) {
     console.error("Error loading configurations", e);
   }
@@ -279,15 +280,21 @@ function loadFromLocalStorage() {
 modeSelect.addEventListener('change', populateStructures);
 keySelect.addEventListener('change', updateFretboardEngine);
 typeSelect.addEventListener('change', updateFretboardEngine);
-patternSelect.addEventListener('change', updateFretboardEngine);
 displayMode.addEventListener('change', updateFretboardEngine);
 shapeSelect.addEventListener('change', updateFretboardEngine);
 fontColorPicker.addEventListener('input', updateFretboardEngine);
-themeSelect.addEventListener('change', () => { changeThemeEngine(); updateFretboardEngine(); });
 visibilityToggle.addEventListener('change', updateFretboardEngine);
 saveBtn.addEventListener('click', saveToLocalStorage);
 
-// Bootstrap
+// Real-time background wood customization trigger
+boardColorPicker.addEventListener('input', (event) => {
+  document.documentElement.style.setProperty('--fretboard-bg', event.target.value);
+});
+
+// Dropdown change trigger
+patternSelect.addEventListener('change', updateFretboardEngine);
+
+// Bootstrap Initialization
 buildFretboardStructure();
 loadFromLocalStorage();
 populateStructures();

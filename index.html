@@ -29,10 +29,11 @@
         <select id="type-select"></select>
       </div>
 
+      <!-- Clean Multi-Select Dropdown Fix (Size attribute removed) -->
       <div class="control-group">
-        <label for="pattern-select">CAGED Pattern Shape</label>
-        <select id="pattern-select">
-          <option value="all">Full Fretboard View</option>
+        <label for="pattern-select">CAGED Patterns (Hold Ctrl/Cmd)</label>
+        <select id="pattern-select" multiple>
+          <option value="all" selected>Full Fretboard View</option>
           <option value="caged_1">Pattern 1 (G / Em Shape)</option>
           <option value="caged_2">Pattern 2 (E / Dm Shape)</option>
           <option value="caged_3">Pattern 3 (D / Cm Shape)</option>
@@ -42,16 +43,16 @@
       </div>
 
       <div class="control-group">
-        <label for="display-mode">Note Label Display</label>
+        <label for="display-mode">Note Display</label>
         <select id="display-mode">
-          <option value="names">Note Names (C, D, E)</option>
-          <option value="intervals">Interval Numbers (1, 2, 3)</option>
+          <option value="names"> Names (C, D, E)</option>
+          <option value="intervals">Interval (1, 2, 3)</option>
           <option value="combined">Combined (C (1))</option>
         </select>
       </div>
 
       <div class="control-group">
-        <label for="shape-select">Marker Style Shape</label>
+        <label for="shape-select">Marker Shape</label>
         <select id="shape-select">
           <option value="shape-circle">Circle / Round</option>
           <option value="shape-square">Square</option>
@@ -60,19 +61,16 @@
       </div>
 
       <div class="control-group">
-        <label for="font-color-picker">Marker Font Color</label>
+        <label for="font-color-picker">Font Color</label>
         <input type="color" id="font-color-picker" value="#ffffff">
       </div>
 
       <div class="control-group">
-        <label for="theme-select">Visual Palette Theme</label>
-        <select id="theme-select">
-          <option value="dark">Dark Theme</option>
-          <option value="light">Light Theme</option>
-        </select>
+        <label for="board-color-picker">Fretboard Color</label>
+        <input type="color" id="board-color-picker" value="#2e2e3e">
       </div>
 
-      <div class="control-group toggle-container">
+      <div class="control-group toggle-container" style="padding-top: 5px;">
         <label for="visibility-toggle">Display Background Notes</label>
         <input type="checkbox" id="visibility-toggle" checked style="width: 20px; height: 20px; cursor:pointer;">
       </div>

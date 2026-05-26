@@ -1,4 +1,9 @@
-:root, [data-theme="dark"] {
+:root {
+  --label-width: 60px;
+  --fret-width: 55px;
+  --title-size: clamp(1.4rem, 5vw, 2.2rem);
+  --dropdown-text-size: 0.65rem;
+  
   --bg-color: #1a1a24;
   --panel-bg: #242432;
   --fretboard-bg: #2e2e3e;
@@ -10,26 +15,8 @@
   --accent-color: #4f46e5;
   --input-bg: #2d2d3d;
   --input-border: #475569;
-  --label-width: 60px;
-  --fret-width: 55px;
   --passive-note-bg: rgba(241, 245, 249, 0.12);
   --passive-note-text: rgba(255, 255, 255, 0.35);
-}
-
-[data-theme="light"] {
-  --bg-color: #f1f5f9;
-  --panel-bg: #ffffff;
-  --fretboard-bg: #e2e8f0;
-  --fret-color: #cbd5e1;
-  --nut-color: #475569;
-  --marker-dot: #94a3b8;
-  --text-color: #0f172a;
-  --muted-text: #64748b;
-  --accent-color: #3b82f6;
-  --input-bg: #f8fafc;
-  --input-border: #cbd5e1;
-  --passive-note-bg: rgba(15, 23, 42, 0.08);
-  --passive-note-text: rgba(15, 23, 42, 0.3);
 }
 
 * {
@@ -42,7 +29,7 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  padding: 20px;
+  padding: clamp(10px, 3vw, 20px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,14 +39,17 @@ body {
 
 h1 {
   margin-bottom: 20px;
-  font-weight: 600;
+  font-size: var(--title-size);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .container {
   width: 100%;
   max-width: 1450px;
   background-color: var(--panel-bg);
-  padding: 20px;
+  padding: clamp(12px, 2.5vw, 20px);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   transition: background-color 0.2s;
@@ -67,41 +57,80 @@ h1 {
 
 .controls-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
   margin-bottom: 25px;
-  background: rgba(0,0,0,0.05);
-  padding: 15px;
+  background: rgba(0,0,0,0.03);
+  padding: 12px;
   border-radius: 8px;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--muted-text);
   font-weight: 500;
 }
 
-select, input[type="color"] {
+select {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 10px;
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 6px;
   color: var(--text-color);
-  font-size: 0.95rem;
+  font-size: var(--dropdown-text-size);
   outline: none;
   cursor: pointer;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
+/* Sizing Fix: Allows multi-select fields to take form naturally */
+select[multiple] {
+  font-size: 0.7rem;
+  padding: 8px 10px;
+  height: auto;
+  overflow-y: auto;
+  white-space: normal;
+}
+
+select[multiple] option {
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 35px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+}
+
+input[type="color"]::-moz-color-swatch {
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+}
+
 #key-select {
-  max-width: 90px;
+  max-width: 70px;
 }
 
 .toggle-container {
@@ -121,7 +150,7 @@ select, input[type="color"] {
 
 .color-pickers {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 10px;
   margin-top: 10px;
 }
@@ -130,18 +159,15 @@ select, input[type="color"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: var(--input-bg);
-  padding: 6px;
+  padding: 8px;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .picker-item input[type="color"] {
-  padding: 0;
-  height: 25px;
-  border: none;
-  border-radius: 4px;
+  height: 28px;
 }
 
 .action-btn {
@@ -160,6 +186,7 @@ select, input[type="color"] {
   width: 100%;
   padding: 20px 0;
   margin-top: 10px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fretboard-grid {
@@ -182,7 +209,7 @@ select, input[type="color"] {
   background-color: var(--panel-bg);
   height: 40px;
   border-right: 4px solid var(--nut-color);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .fret-cell {
@@ -226,12 +253,12 @@ select, input[type="color"] {
 .fret-cell .dot-marker.double-bot { top: 75%; }
 
 .note-marker {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.70rem;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
