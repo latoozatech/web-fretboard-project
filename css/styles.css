@@ -56,19 +56,22 @@ h1 {
 }
 
 .controls-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
+  display: flex;                /* Changed from grid to flex for natural item spacing */
+  flex-wrap: wrap;              /* Ensures options wrap cleanly if screen is too narrow */
+  align-items: center;        /* Aligns bottoms of all inputs perfectly on the horizontal axis */
+  gap: 14px;                    /* Sets a clean, uniform distance between your controls */
   margin-bottom: 25px;
   background: rgba(0,0,0,0.03);
   padding: 12px;
   border-radius: 8px;
 }
 
+
 .control-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 120px;             /* Keeps dropdown widths uniform */
 }
 
 label {
@@ -112,7 +115,7 @@ input[type="color"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  width: 100%;
+  width: 20%;
   height: 35px;
   background-color: transparent;
   border: none;
@@ -130,16 +133,23 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #key-select {
-  max-width: 70px;
+  max-width: 60px;              /* Keeps the Key select box tight and compact */
+  min-width: 50px;
 }
 
 .toggle-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding-top: 20px;
+  align-items: center; /* Vertically centers the text and the checkbox square */
+  gap: 8px;
+  height: 33px; /* Keeps its height aligned with your select fields */
+  margin: 0 !important; /* Clears any top or bottom margin offsets */
+  white-space: nowrap;
+}
+
+/* Fix text wrapping inside toggle labels if applicable */
+.toggle-container label {
+  white-space: nowrap;
 }
 
 .color-mapper {
@@ -294,4 +304,86 @@ input[type="color"]::-moz-color-swatch {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--muted-text);
+}
+
+
+/* Custom Checkbox Dropdown Container */
+.custom-multiselect {
+  position: relative;
+  width: 100%;
+}
+
+.select-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: var(--dropdown-text-size);
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-box .arrow {
+  font-size: 0.5rem;
+  transition: transform 0.2s;
+}
+
+/* Hidden container by default */
+.checkboxes-wrapper {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 6px;
+}
+
+/* Toggle Class applied via JS */
+.checkboxes-wrapper.show {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Individual Checkbox Row Styling */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-color) !important;
+}
+
+.checkbox-item:hover {
+  background-color: var(--input-bg);
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.checkbox-item span {
+  font-size: 0.7rem;
+}
+
+.control-group input[type="color"] {
+  width: 28px !important;       /* Forces color pickers to stay tight and square */
+  height: 28px !important;
+  padding: 0;
 }

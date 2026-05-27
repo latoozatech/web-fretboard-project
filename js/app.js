@@ -28,7 +28,12 @@ const DICTIONARY = {
 const keySelect = document.getElementById('key-select');
 const modeSelect = document.getElementById('mode-select');
 const typeSelect = document.getElementById('type-select');
-const patternSelect = document.getElementById('pattern-select');
+const dropdownToggle = document.getElementById('caged-dropdown-toggle');
+
+const checkboxesContainer = document.getElementById('caged-checkboxes-container');
+const labelText = document.getElementById('dropdown-label-text');
+const patternCheckboxes = checkboxesContainer.querySelectorAll('input[type="checkbox"]');
+
 const displayMode = document.getElementById('display-mode');
 const shapeSelect = document.getElementById('shape-select');
 const fontColorPicker = document.getElementById('font-color-picker');
@@ -156,14 +161,15 @@ function handleManualClick(string, fret) {
 
 // Helper: Aggregates selected dropdown option values
 function getSelectedPatterns() {
-  const selected = [];
-  for (let i = 0; i < patternSelect.options.length; i++) {
-    if (patternSelect.options[i].selected) {
-      selected.push(patternSelect.options[i].value);
-    }
-  }
-  return selected;
+    const selected = [];
+    patternCheckboxes.forEach(cb => {
+        if (cb.checked) {
+            selected.push(cb.value);
+        }
+    });
+    return selected;
 }
+
 
 // Main rendering/update
 function updateFretboardEngine() {
@@ -221,7 +227,7 @@ function updateFretboardEngine() {
     } else if (labelMode === 'intervals') {
       marker.innerText = degreeNum ? degreeNum : noteNameText;
     } else {
-      marker.innerText = degreeNum ? `${noteNameText}(${degreeNum})` : noteNameText;
+      marker.innerText = degreeNum ? `${noteNameText}${degreeNum}` : noteNameText;
     }
     
     if (isActiveTarget) {
@@ -292,9 +298,55 @@ boardColorPicker.addEventListener('input', (event) => {
 });
 
 // Dropdown change trigger
-patternSelect.addEventListener('change', updateFretboardEngine);
+//patternSelect.addEventListener('change', updateFretboardEngine);
 
 // Bootstrap Initialization
 buildFretboardStructure();
 loadFromLocalStorage();
 populateStructures();
+
+
+// Toggle display of the dropdown menu
+dropdownToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    checkboxesContainer.classList.toggle('show');
+    dropdownToggle.querySelector('.arrow').style.transform = 
+        checkboxesContainer.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+});
+
+// Close dropdown if clicking outside of it
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.custom-multiselect')) {
+        checkboxesContainer.classList.remove('show');
+        dropdownToggle.querySelector('.arrow').style.transform = 'rotate(0deg)';
+    }
+});
+
+// Handle checking logic and label update
+patternCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+        const selected = getSelectedPatterns();
+
+        // Mutual exclusivity rule logic
+        if (e.target.value === 'all' && e.target.checked) {
+            // If full view is checked, uncheck individual patterns
+            patternCheckboxes.forEach(cb => { if (cb.value !== 'all') cb.checked = false; });
+        } else if (e.target.value !== 'all' && e.target.checked) {
+            // If individual pattern is checked, uncheck full view
+            patternCheckboxes.forEach(cb => { if (cb.value === 'all') cb.checked = false; });
+        }
+
+        // Update label text dynamically based on selection
+        const finalSelected = getSelectedPatterns();
+        if (finalSelected.length === 0) {
+            labelText.innerText = "Select Patterns...";
+        } else if (finalSelected.includes('all')) {
+            labelText.innerText = "Full Fretboard View";
+        } else {
+            labelText.innerText = `${finalSelected.length} Pattern(s) Active`;
+        }
+
+        // Trigger fretboard engine refresh
+        updateFretboardEngine();
+    });
+});
